@@ -1,66 +1,40 @@
-@import 'tailwindcss';
+/* 1. Impor Google Fonts di posisi paling atas */
+@import url('https://fonts.googleapis.com/css2?family=Domine:wght@400;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+/* 2. Impor Tailwind CSS v4 */
+@import "tailwindcss";
+
+/* 3. Impor CSS Flux UI */
 @import '../../vendor/livewire/flux/dist/flux.css';
 
-@source '../views';
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../vendor/livewire/flux-pro/stubs/**/*.blade.php';
-@source '../../vendor/livewire/flux/stubs/**/*.blade.php';
-
-@custom-variant dark (&:where(.dark, .dark *));
-
+/* 4. Konfigurasi Tema @theme */
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Outfit', sans-serif;
+    --font-serif: 'Domine', serif;
+    --font-heading: 'Domine', serif;
 
-    --color-zinc-50: #fafafa;
-    --color-zinc-100: #f5f5f5;
-    --color-zinc-200: #e5e5e5;
-    --color-zinc-300: #d4d4d4;
-    --color-zinc-400: #a3a3a3;
-    --color-zinc-500: #737373;
-    --color-zinc-600: #525252;
-    --color-zinc-700: #404040;
-    --color-zinc-800: #262626;
-    --color-zinc-900: #171717;
-    --color-zinc-950: #0a0a0a;
+    /* Palette Warna Khusus */
+    --color-brand-teal-light: #8AD6D1;
+    --color-brand-teal: #359FA0;
+    --color-brand-cream: #FFF0C5;
+    --color-brand-orange: #FF8C52;
 
-    --color-accent: var(--color-neutral-800);
-    --color-accent-content: var(--color-neutral-800);
-    --color-accent-foreground: var(--color-white);
+    /* Override Slate/Neutral Theme */
+    --color-brand-dark: #1E293B;
+    --color-brand-bg: #F8FAFC;
 }
 
-@layer theme {
-    .dark {
-        --color-accent: var(--color-white);
-        --color-accent-content: var(--color-white);
-        --color-accent-foreground: var(--color-neutral-800);
-    }
+/* 5. Styling Bawaan */
+body {
+    font-family: var(--font-sans);
+    background-color: var(--color-brand-bg);
+    color: var(--color-brand-dark);
 }
 
-@layer base {
-
-    *,
-    ::after,
-    ::before,
-    ::backdrop,
-    ::file-selector-button {
-        border-color: var(--color-gray-200, currentColor);
-    }
+h1, h2, h3, h4, .font-heading {
+    font-family: var(--font-heading);
 }
 
-[data-flux-field]:not(ui-radio, ui-checkbox) {
-    @apply grid gap-2;
+.font-serif-custom {
+    font-family: var(--font-serif);
 }
-
-[data-flux-label] {
-    @apply  !mb-0 !leading-tight;
-}
-
-input:focus[data-flux-control],
-textarea:focus[data-flux-control],
-select:focus[data-flux-control] {
-    @apply outline-hidden ring-2 ring-accent ring-offset-2 ring-offset-accent-foreground;
-}
-
-/* \[:where(&)\]:size-4 {
-    @apply size-4;
-} */
