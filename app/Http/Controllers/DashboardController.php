@@ -18,7 +18,7 @@ class DashboardController extends Controller
     public function index(): View
     {
         $summary = $this->dashboardService->getSummaryData();
-        $recentTransactions = $this->dashboardService->getRecentTransactions(8);
+        $recentTransactions = $this->dashboardService->getRecentTransactions(5);
         $sumberDanaOptions = SumberDanaPengeluaran::all();
 
         return view('welcome', compact('summary', 'recentTransactions', 'sumberDanaOptions'));
