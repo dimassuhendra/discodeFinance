@@ -38,7 +38,7 @@
                     Dashboard
                 </a>
 
-                <a href="/transaksi" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all {{ request()->is('transaksi*') ? 'bg-[#FFF0C5] text-[#359FA0] font-bold shadow-md' : 'text-white hover:bg-white/10' }}">
+                <a href="/transactions" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all {{ request()->is('transactions*') ? 'bg-[#FFF0C5] text-[#359FA0] font-bold shadow-md' : 'text-white hover:bg-white/10' }}">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l2-2 4 4m0-6l-2 2-4-4M3 6h18M3 12h18M3 18h18"/></svg>
                     Transaksi
                 </a>
@@ -114,7 +114,7 @@
                 </a>
 
                 <!-- Transaksi -->
-                <a href="/transaksi" class="flex flex-col items-center justify-center flex-1 py-1 text-xs transition-all {{ request()->is('transaksi*') ? 'text-[#FFF0C5] font-bold scale-105' : 'text-white/80 hover:text-white' }}">
+                <a href="/transactions" class="flex flex-col items-center justify-center flex-1 py-1 text-xs transition-all {{ request()->is('transactions*') ? 'text-[#FFF0C5] font-bold scale-105' : 'text-white/80 hover:text-white' }}">
                     <svg class="w-6 h-6 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l2-2 4 4m0-6l-2 2-4-4M3 6h18M3 12h18M3 18h18"/></svg>
                     <span>Transaksi</span>
                 </a>
