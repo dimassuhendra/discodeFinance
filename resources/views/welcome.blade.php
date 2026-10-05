@@ -29,50 +29,181 @@
             </div>
         @endif
 
-        <section aria-label="Ringkasan saldo" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            <article class="rounded-2xl bg-[#359FA0] p-6 text-white shadow-sm sm:col-span-2 xl:col-span-1">
-                <p class="text-sm font-medium text-white/75">Total saldo</p>
-                <p class="mt-3 text-3xl font-bold tracking-tight">
-                    Rp {{ number_format((float) ($summary['total_saldo'] ?? 0), 0, ',', '.') }}
-                </p>
-                <p class="mt-2 text-sm text-white/75">Saldo tersedia dari seluruh sumber dana</p>
-            </article>
-
-            <article class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                <div class="flex items-center justify-between gap-4">
-                    <div>
-                        <p class="text-sm font-medium text-slate-500">Total pemasukan</p>
-                        <p class="mt-3 text-2xl font-bold tracking-tight text-slate-900">
-                            Rp {{ number_format((float) ($summary['total_pemasukkan'] ?? 0), 0, ',', '.') }}
-                        </p>
+        <div class="space-y-8 font-sans">
+            {{-- SECTION RINGKASAN UTAMA --}}
+            <section aria-label="Ringkasan saldo" class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                
+                {{-- Total Saldo --}}
+                <article class="flex flex-col justify-between rounded-2xl bg-[#359FA0] p-6 text-white shadow-xs sm:col-span-2 xl:col-span-1">
+                    <div class="flex items-start justify-between gap-4">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-wider text-white/80">Total Saldo</p>
+                            <p class="mt-3 text-3xl font-extrabold tracking-tight text-white">
+                                Rp {{ number_format((float) ($summary['total_saldo'] ?? 0), 0, ',', '.') }}
+                            </p>
+                        </div>
+                        <span class="flex size-11 items-center justify-center rounded-xl bg-white/20 text-white backdrop-blur-xs" aria-hidden="true">
+                            <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="5" width="20" height="14" rx="2" />
+                                <line x1="2" y1="10" x2="22" y2="10" />
+                            </svg>
+                        </span>
                     </div>
-                    <span class="flex size-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600" aria-hidden="true">
-                        <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M7 14l5-5 5 5M12 9v11M5 4h14" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
-                        </svg>
-                    </span>
-                </div>
-                <p class="mt-2 text-sm text-slate-500">Akumulasi seluruh pemasukan</p>
-            </article>
+                    <p class="mt-4 text-xs font-medium text-white/80">Saldo tersedia dari seluruh sumber dana</p>
+                </article>
 
-            <article class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                <div class="flex items-center justify-between gap-4">
-                    <div>
-                        <p class="text-sm font-medium text-slate-500">Total pengeluaran</p>
-                        <p class="mt-3 text-2xl font-bold tracking-tight text-slate-900">
-                            Rp {{ number_format((float) ($summary['total_pengeluaran'] ?? 0), 0, ',', '.') }}
-                        </p>
+                {{-- Total Pemasukan --}}
+                <article class="flex flex-col justify-between rounded-2xl bg-[#8AD6D1] p-6 text-slate-900 shadow-xs">
+                    <div class="flex items-start justify-between gap-4">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-wider text-teal-950/70">Total Pemasukan</p>
+                            <p class="mt-3 text-2xl font-extrabold tracking-tight text-slate-900">
+                                Rp {{ number_format((float) ($summary['total_pemasukkan'] ?? 0), 0, ',', '.') }}
+                            </p>
+                        </div>
+                        <span class="flex size-11 items-center justify-center rounded-xl bg-white/40 text-teal-950 shadow-2xs" aria-hidden="true">
+                            <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M7 14l5-5 5 5M12 9v11M5 4h14" />
+                            </svg>
+                        </span>
                     </div>
-                    <span class="flex size-11 items-center justify-center rounded-xl bg-orange-50 text-[#FF8C52]" aria-hidden="true">
-                        <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M7 10l5 5 5-5M12 15V4M5 20h14" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
-                        </svg>
-                    </span>
-                </div>
-                <p class="mt-2 text-sm text-slate-500">Akumulasi seluruh pengeluaran</p>
-            </article>
-        </section>
+                    <p class="mt-4 text-xs font-medium text-teal-950/70">Akumulasi seluruh pemasukan</p>
+                </article>
 
+                {{-- Total Pengeluaran --}}
+                <article class="flex flex-col justify-between rounded-2xl bg-[#FF8C52] p-6 text-white shadow-xs">
+                    <div class="flex items-start justify-between gap-4">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-wider text-white/80">Total Pengeluaran</p>
+                            <p class="mt-3 text-2xl font-extrabold tracking-tight text-white">
+                                Rp {{ number_format((float) ($summary['total_pengeluaran'] ?? 0), 0, ',', '.') }}
+                            </p>
+                        </div>
+                        <span class="flex size-11 items-center justify-center rounded-xl bg-white/20 text-white backdrop-blur-xs" aria-hidden="true">
+                            <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M7 10l5 5 5-5M12 15V4M5 20h14" />
+                            </svg>
+                        </span>
+                    </div>
+                    <p class="mt-4 text-xs font-medium text-white/80">Akumulasi seluruh pengeluaran</p>
+                </article>
+
+            </section>
+
+            {{-- SECTION 1: STATISTIK PENGELUARAN (SELURUH SUMBER DANA) --}}
+            <div>
+                <div class="mb-4 flex items-center gap-2">
+                    <span class="h-5 w-1.5 rounded-full bg-[#359FA0]"></span>
+                    <h2 class="text-lg font-bold text-slate-900 font-sans">Statistik Pengeluaran (Seluruh Sumber Dana)</h2>
+                </div>
+
+                {{-- Pastikan class grid & md:grid-cols-3 aktif di sini --}}
+                <div class="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+                    {{-- Card Pengeluaran Tertinggi --}}
+                    <article class="flex flex-col justify-between rounded-2xl bg-white p-5 border border-slate-200/80 shadow-xs">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Pengeluaran Tertinggi</p>
+                            <p class="mt-2 text-2xl font-extrabold text-rose-600">
+                                Rp {{ number_format((float) ($summary['stats_all']['highest']['total'] ?? 0), 0, ',', '.') }}
+                            </p>
+                        </div>
+                        <p class="mt-3 text-xs font-medium text-slate-500">
+                            @if (!empty($summary['stats_all']['highest']['tanggal']))
+                                {{ \Carbon\Carbon::parse($summary['stats_all']['highest']['tanggal'])->translatedFormat('l, d F Y') }}
+                            @else
+                                Belum ada data
+                            @endif
+                        </p>
+                    </article>
+
+                    {{-- Card Pengeluaran Terendah --}}
+                    <article class="flex flex-col justify-between rounded-2xl bg-white p-5 border border-slate-200/80 shadow-xs">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Pengeluaran Terendah</p>
+                            <p class="mt-2 text-2xl font-extrabold text-emerald-600">
+                                Rp {{ number_format((float) ($summary['stats_all']['lowest']['total'] ?? 0), 0, ',', '.') }}
+                            </p>
+                        </div>
+                        <p class="mt-3 text-xs font-medium text-slate-500">
+                            @if (!empty($summary['stats_all']['lowest']['tanggal']))
+                                {{ \Carbon\Carbon::parse($summary['stats_all']['lowest']['tanggal'])->translatedFormat('l, d F Y') }}
+                            @else
+                                Belum ada data
+                            @endif
+                        </p>
+                    </article>
+
+                    {{-- Card Rata-rata Pengeluaran --}}
+                    <article class="flex flex-col justify-between rounded-2xl bg-white p-5 border border-slate-200/80 shadow-xs">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wider text-slate-400">Rata-rata / Hari</p>
+                            <p class="mt-2 text-2xl font-extrabold text-slate-900">
+                                Rp {{ number_format((float) ($summary['stats_all']['average'] ?? 0), 0, ',', '.') }}
+                            </p>
+                        </div>
+                        <p class="mt-3 text-xs font-medium text-slate-500">Berdasarkan hari aktif transaksi</p>
+                    </article>
+                </div>
+            </div>
+
+            {{-- SECTION 2: STATISTIK PENGELUARAN (KHUSUS UANG MAKAN) --}}
+            <div>
+                <div class="mb-4 flex items-center gap-2">
+                    <span class="h-5 w-1.5 rounded-full bg-[#FF8C52]"></span>
+                    <h2 class="text-lg font-bold text-slate-900 font-sans">Statistik Pengeluaran (Uang Makan)</h2>
+                </div>
+
+                {{-- Pastikan class grid & md:grid-cols-3 aktif di sini --}}
+                <div class="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+                    {{-- Card Pengeluaran Tertinggi Uang Makan --}}
+                    <article class="flex flex-col justify-between rounded-2xl bg-[#FFF0C5] p-5 border border-[#FF8C52]/20 shadow-xs">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wider text-[#FF8C52]">Pengeluaran Tertinggi</p>
+                            <p class="mt-2 text-2xl font-extrabold text-rose-600">
+                                Rp {{ number_format((float) ($summary['stats_uang_makan']['highest']['total'] ?? 0), 0, ',', '.') }}
+                            </p>
+                        </div>
+                        <p class="mt-3 text-xs font-medium text-amber-900/70">
+                            @if (!empty($summary['stats_uang_makan']['highest']['tanggal']))
+                                {{ \Carbon\Carbon::parse($summary['stats_uang_makan']['highest']['tanggal'])->translatedFormat('l, d F Y') }}
+                            @else
+                                Belum ada data
+                            @endif
+                        </p>
+                    </article>
+
+                    {{-- Card Pengeluaran Terendah Uang Makan --}}
+                    <article class="flex flex-col justify-between rounded-2xl bg-[#FFF0C5] p-5 border border-[#FF8C52]/20 shadow-xs">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wider text-[#FF8C52]">Pengeluaran Terendah</p>
+                            <p class="mt-2 text-2xl font-extrabold text-emerald-600">
+                                Rp {{ number_format((float) ($summary['stats_uang_makan']['lowest']['total'] ?? 0), 0, ',', '.') }}
+                            </p>
+                        </div>
+                        <p class="mt-3 text-xs font-medium text-amber-900/70">
+                            @if (!empty($summary['stats_uang_makan']['lowest']['tanggal']))
+                                {{ \Carbon\Carbon::parse($summary['stats_uang_makan']['lowest']['tanggal'])->translatedFormat('l, d F Y') }}
+                            @else
+                                Belum ada data
+                            @endif
+                        </p>
+                    </article>
+
+                    {{-- Card Rata-rata Pengeluaran Uang Makan --}}
+                    <article class="flex flex-col justify-between rounded-2xl bg-[#FFF0C5] p-5 border border-[#FF8C52]/20 shadow-xs">
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-wider text-[#FF8C52]">Rata-rata / Hari</p>
+                            <p class="mt-2 text-2xl font-extrabold text-slate-900">
+                                Rp {{ number_format((float) ($summary['stats_uang_makan']['average'] ?? 0), 0, ',', '.') }}
+                            </p>
+                        </div>
+                        <p class="mt-3 text-xs font-medium text-amber-900/70">Khusus sumber dana Uang Makan</p>
+                    </article>
+                </div>
+            </div>
+        </div>
+
+        {{-- Section Saldo per Sumber Dana --}}
         <section aria-labelledby="funds-heading" class="rounded-2xl border border-slate-200 bg-white shadow-sm">
             <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4 sm:px-6">
                 <div>
@@ -109,6 +240,7 @@
             @endif
         </section>
 
+        {{-- Section Transaksi Terbaru --}}
         <section aria-labelledby="transactions-heading" class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
             <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4 sm:px-6">
                 <div>
@@ -166,6 +298,7 @@
             @endif
         </section>
 
+        {{-- Modal Quick Expense --}}
         <div
             x-cloak
             x-show="quickExpenseOpen"
