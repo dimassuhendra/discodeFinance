@@ -23,7 +23,7 @@ class TransactionController extends Controller
         $sumberDanaPengeluaranList = $this->transactionService->getSumberDanaPengeluaran();
         $sumberDanaPemasukkanList  = $this->transactionService->getSumberDanaPemasukkan();
 
-        return view('transaction', compact(
+        return view('menu.transactions.index', compact(
             'transactions',
             'sumberDanaPengeluaranList',
             'sumberDanaPemasukkanList'
