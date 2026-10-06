@@ -2,60 +2,59 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\SumberDanaPemasukkan;
-use App\Models\SumberDanaPengeluaran;
+use App\Services\SumberDanaService;
 use Illuminate\Http\Request;
 
 class SumberDanaController extends Controller
 {
+    protected $sumberDanaService;
+
+    public function __construct(SumberDanaService $sumberDanaService)
+    {
+        $this->sumberDanaService = $sumberDanaService;
+    }
+
     public function index()
     {
-        $pemasukkan = SumberDanaPemasukkan::latest()->get();
-        $pengeluaran = SumberDanaPengeluaran::latest()->get();
+        $data = $this->sumberDanaService->getAllData();
 
-        return view('transactions.sumber-dana.index', compact('pemasukkan', 'pengeluaran'));
+        return view('menu.transactions.sumber-dana.index', [
+            'pemasukkan' => $data['pemasukkan'],
+            'pengeluaran' => $data['pengeluaran'],
+            'chartData' => $data['chartData'],
+        ]);
     }
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'tipe' => 'required|in:pemasukkan,pengeluaran',
             'nama_sumber_dana' => 'required|string|max:255',
+            'budget' => 'nullable|numeric|min:0',
+            'keterangan' => 'nullable|string',
         ]);
 
-        if ($request->tipe === 'pemasukkan') {
-            SumberDanaPemasukkan::create(['nama_sumber_dana' => $request->nama_sumber_dana]);
-        } else {
-            SumberDanaPengeluaran::create(['nama_sumber_dana' => $request->nama_sumber_dana]);
-        }
+        $this->sumberDanaService->storeData($validated);
 
         return redirect()->back()->with('success', 'Sumber dana berhasil ditambahkan.');
     }
 
     public function update(Request $request, $tipe, $id)
     {
-        $request->validate([
+        $validated = $request->validate([
             'nama_sumber_dana' => 'required|string|max:255',
+            'budget' => 'nullable|numeric|min:0',
+            'keterangan' => 'nullable|string',
         ]);
 
-        if ($tipe === 'pemasukkan') {
-            $sumber = SumberDanaPemasukkan::findOrFail($id);
-        } else {
-            $sumber = SumberDanaPengeluaran::findOrFail($id);
-        }
-
-        $sumber->update(['nama_sumber_dana' => $request->nama_sumber_dana]);
+        $this->sumberDanaService->updateData($validated, $tipe, $id);
 
         return redirect()->back()->with('success', 'Sumber dana berhasil diperbarui.');
     }
 
     public function destroy($tipe, $id)
     {
-        if ($tipe === 'pemasukkan') {
-            SumberDanaPemasukkan::findOrFail($id)->delete();
-        } else {
-            SumberDanaPengeluaran::findOrFail($id)->delete();
-        }
+        $this->sumberDanaService->deleteData($tipe, $id);
 
         return redirect()->back()->with('success', 'Sumber dana berhasil dihapus.');
     }
