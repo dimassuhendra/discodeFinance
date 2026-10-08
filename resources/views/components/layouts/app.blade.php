@@ -101,7 +101,7 @@
         <!-- 3. KONTEN UTAMA (CONTENT AREA - FULL 100% WIDTH)          -->
         <!-- ========================================================= -->
         <main class="flex-1 lg:pl-64 min-w-0 w-full">
-            <div class="w-full p-4 sm:p-6 lg:p-8 space-y-6 pb-28 sm:pb-32 lg:pb-12">
+            <div class="w-full p-4 sm:p-6 lg:p-8 space-y-6 pb-36 sm:pb-32 lg:pb-12">
                 
                 {{-- HEADER HALAMAN BERGAYA BANNER MODERN --}}
                 @if ($title)
@@ -190,5 +190,8 @@
     </div>
 
     @fluxScripts
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    @stack('scripts')
 </body>
 </html>

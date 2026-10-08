@@ -48,6 +48,86 @@ class FinanceDashboardService
             ];
         });
 
+        $budgetUsage = $sumberDanaSummary
+            ->map(function (array $sumber) {
+                $budget = (float) $sumber['budget'];
+                $pengeluaran = (float) $sumber['pengeluaran'];
+
+                return [
+                    'nama' => $sumber['nama'],
+                    'budget' => $budget,
+                    'pengeluaran' => $pengeluaran,
+                    'sisa' => max(0, $budget - $pengeluaran),
+                    'persentase' => $budget > 0
+                        ? round(($pengeluaran / $budget) * 100, 1)
+                        : 0,
+                    'over_budget' => $budget > 0 && $pengeluaran > $budget,
+                ];
+            })
+            ->values();
+
+        $statsAll = $this->getExpenseStats(null, $startDate, $endDate);
+
+        $insights = [];
+
+        $cashFlow = $totalPemasukkan - $totalPengeluaran;
+
+        if ($cashFlow > 0) {
+            $insights[] = [
+                'type' => 'positive',
+                'title' => 'Arus kas positif',
+                'description' => 'Pemasukan bulan ini masih lebih besar daripada total pengeluaran.',
+            ];
+        } elseif ($cashFlow < 0) {
+            $insights[] = [
+                'type' => 'warning',
+                'title' => 'Arus kas negatif',
+                'description' => 'Total pengeluaran bulan ini sudah lebih besar daripada pemasukan.',
+            ];
+        } else {
+            $insights[] = [
+                'type' => 'neutral',
+                'title' => 'Arus kas seimbang',
+                'description' => 'Total pemasukan dan pengeluaran bulan ini berada pada nilai yang sama.',
+            ];
+        }
+
+        foreach ($budgetUsage as $budget) {
+            if ($budget['over_budget']) {
+                $insights[] = [
+                    'type' => 'warning',
+                    'title' => 'Budget ' . $budget['nama'] . ' terlampaui',
+                    'description' => 'Pengeluaran sudah melebihi budget sebesar Rp '
+                        . number_format(
+                            $budget['pengeluaran'] - $budget['budget'],
+                            0,
+                            ',',
+                            '.'
+                        ) . '.',
+                ];
+            } elseif ($budget['persentase'] >= 80) {
+                $insights[] = [
+                    'type' => 'warning',
+                    'title' => 'Budget ' . $budget['nama'] . ' hampir habis',
+                    'description' => 'Sebanyak ' . $budget['persentase'] . '% budget sudah digunakan.',
+                ];
+            }
+        }
+
+        if ($statsAll['highest']) {
+            $insights[] = [
+                'type' => 'info',
+                'title' => 'Pengeluaran terbesar bulan ini',
+                'description' => 'Pengeluaran tertinggi dalam satu hari mencapai Rp '
+                    . number_format(
+                        $statsAll['highest']['total'],
+                        0,
+                        ',',
+                        '.'
+                    ) . '.',
+            ];
+        }
+
         $uangMakan = $sumberDanaList->firstWhere('nama_sumber_dana', 'Uang Makan');
         $emptyStats = ['highest' => null, 'lowest' => null, 'average' => 0];
         $foodExpenses = $uangMakan
@@ -67,9 +147,12 @@ class FinanceDashboardService
             'total_saldo' => $sumberDanaSummary->sum('saldo'),
             'total_pemasukkan' => $totalPemasukkan,
             'total_pengeluaran' => $totalPengeluaran,
+            'cash_flow' => $totalPemasukkan - $totalPengeluaran,
             'period_label' => $periodStart->translatedFormat('F Y'),
             'sumber_dana' => $sumberDanaSummary,
-            'stats_all' => $this->getExpenseStats(null, $startDate, $endDate),
+            'budget_usage' => $budgetUsage,
+            'insights' => $insights,
+            'stats_all' => $statsAll,
             'stats_uang_makan' => $uangMakan
                 ? $this->getExpenseStats($uangMakan->id, $startDate, $endDate)
                 : $emptyStats,
@@ -137,7 +220,7 @@ class FinanceDashboardService
             ->latest('id')
             ->take($limit)
             ->get()
-            ->map(fn (Pengeluaran $item) => [
+            ->map(fn(Pengeluaran $item) => [
                 'id' => $item->id,
                 'tipe' => 'pengeluaran',
                 'tanggal' => $item->tanggal,
@@ -153,7 +236,7 @@ class FinanceDashboardService
             ->latest('id')
             ->take($limit)
             ->get()
-            ->map(fn (Pemasukkan $item) => [
+            ->map(fn(Pemasukkan $item) => [
                 'id' => $item->id,
                 'tipe' => 'pemasukkan',
                 'tanggal' => $item->tanggal,
@@ -176,14 +259,20 @@ class FinanceDashboardService
             ->select('tanggal', DB::raw('SUM(jumlah) as total'))
             ->groupBy('tanggal')
             ->get()
-            ->mapWithKeys(fn ($row) => [Carbon::parse($row->tanggal)->toDateString() => (float) $row->total]);
+            ->mapWithKeys(fn($row) => [Carbon::parse($row->tanggal)->toDateString() => (float) $row->total]);
 
         $dailyExpenses = [];
 
         for ($day = 1; $day <= $today->day; $day++) {
+            // Buat objek tanggal untuk iterasi hari ini
+            $currentDate = $today->copy()->startOfMonth()->addDays($day - 1);
+
             $dailyExpenses[] = [
-                'day' => $day,
-                'amount' => (float) ($totals[$today->copy()->startOfMonth()->addDays($day - 1)->toDateString()] ?? 0),
+                'day'        => $day,
+                'month'      => $currentDate->month,
+                'month_name' => $currentDate->translatedFormat('M'),
+                'date'       => $currentDate->toDateString(),
+                'amount'     => (float) ($totals[$currentDate->toDateString()] ?? 0),
             ];
         }
 
@@ -192,40 +281,48 @@ class FinanceDashboardService
 
     private function getFoodBudgetForecast(SumberDanaPengeluaran $source, CarbonInterface $today): array
     {
-        $createdAt = $source->created_at?->copy()->startOfDay() ?? $today->copy()->startOfMonth();
-        $yesterday = $today->copy()->subDay();
+        // 1. Tentukan rentang tanggal: 10 hari lalu s.d. Besok
+        $startDate = $today->copy()->subDays(3);
+        $endDate = $today->copy()->addDay(); // Besok
+
+        // 2. Hitung carryOver historis dari awal akun dibuat sampai H-11 (sebelum rentang tabel)
+        $createdAt = $source->created_at?->copy()->startOfDay() ?? $startDate->copy();
+        $beforeRangeEnd = $startDate->copy()->subDay();
+
         $historicalExpenses = Pengeluaran::query()
             ->where('sumber_dana_id', $source->id)
             ->whereDate('tanggal', '>=', $createdAt->toDateString())
-            ->whereDate('tanggal', '<=', $yesterday->toDateString())
+            ->whereDate('tanggal', '<=', $beforeRangeEnd->toDateString())
             ->select('tanggal', DB::raw('SUM(jumlah) as total'))
             ->groupBy('tanggal')
             ->get()
-            ->mapWithKeys(fn ($row) => [Carbon::parse($row->tanggal)->toDateString() => (float) $row->total]);
+            ->mapWithKeys(fn($row) => [Carbon::parse($row->tanggal)->toDateString() => (float) $row->total]);
 
         $carryOver = 0.0;
-
-        for ($date = $createdAt->copy(); $date->lte($yesterday); $date = $date->addDay()) {
-            $spent = (float) ($historicalExpenses[$date->toDateString()] ?? 0);
-            $carryOver = max(0, $carryOver + $spent - self::DAILY_FOOD_BUDGET);
+        if ($createdAt->lte($beforeRangeEnd)) {
+            for ($date = $createdAt->copy(); $date->lte($beforeRangeEnd); $date = $date->addDay()) {
+                $spent = (float) ($historicalExpenses[$date->toDateString()] ?? 0);
+                $carryOver = max(0, $carryOver + $spent - self::DAILY_FOOD_BUDGET);
+            }
         }
 
-        $forecastEnd = $today->copy()->addDays(9);
-        $forecastExpenses = Pengeluaran::query()
+        // 3. Ambil pengeluaran aktual untuk rentang tabel (H-10 s.d. Besok)
+        $rangeExpenses = Pengeluaran::query()
             ->where('sumber_dana_id', $source->id)
-            ->whereDate('tanggal', '>=', $today->toDateString())
-            ->whereDate('tanggal', '<=', $forecastEnd->toDateString())
+            ->whereDate('tanggal', '>=', $startDate->toDateString())
+            ->whereDate('tanggal', '<=', $endDate->toDateString())
             ->select('tanggal', DB::raw('SUM(jumlah) as total'))
             ->groupBy('tanggal')
             ->get()
-            ->mapWithKeys(fn ($row) => [Carbon::parse($row->tanggal)->toDateString() => (float) $row->total]);
+            ->mapWithKeys(fn($row) => [Carbon::parse($row->tanggal)->toDateString() => (float) $row->total]);
+
         $forecast = [];
 
-        for ($date = $today->copy(); $date->lte($forecastEnd); $date = $date->addDay()) {
-            $spent = (float) ($forecastExpenses[$date->toDateString()] ?? 0);
+        // 4. Looping dari H-10 s.d. Besok
+        for ($date = $startDate->copy(); $date->lte($endDate); $date = $date->addDay()) {
+            $spent = (float) ($rangeExpenses[$date->toDateString()] ?? 0);
             $dailyAllowance = max(0, self::DAILY_FOOD_BUDGET - $carryOver);
             $dailyBalance = $dailyAllowance - $spent;
-            $carryOver = max(0, $carryOver + $spent - self::DAILY_FOOD_BUDGET);
 
             $forecast[] = [
                 'date' => $date->copy(),
@@ -234,6 +331,9 @@ class FinanceDashboardService
                 'remaining' => (float) max(0, $dailyBalance),
                 'over_budget' => (float) max(0, -$dailyBalance),
             ];
+
+            // Hitung akumulasi carryOver untuk hari berikutnya
+            $carryOver = max(0, $carryOver + $spent - self::DAILY_FOOD_BUDGET);
         }
 
         return $forecast;
