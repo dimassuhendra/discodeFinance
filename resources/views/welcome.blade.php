@@ -52,7 +52,7 @@
         <div
             x-ref="summarySlides"
             x-on:scroll.debounce.100ms="updateSlide()"
-            class="flex snap-x snap-mandatory gap-0 overflow-x-auto scroll-smooth pb-2 md:grid md:grid-cols-3 md:gap-5 md:overflow-visible md:pb-0"
+            class="flex snap-x snap-mandatory gap-0 overflow-x-auto no-scrollbar scroll-smooth pb-2 md:grid md:grid-cols-3 md:gap-5 md:overflow-visible md:pb-0"
         >
             {{-- SLIDE 1 --}}
             <div class="w-full shrink-0 snap-center space-y-4 px-1 md:w-auto">
@@ -235,7 +235,7 @@
 
         <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6 w-full max-w-full overflow-hidden">
             <!-- ITEM 1: BAR CHART -->
-            <div class="flex flex-col justify-between rounded-2xl border border-slate-100 bg-slate-50/50 p-4 w-full min-w-0 overflow-hidden">
+            <div class="flex flex-col justify-between rounded-2xl bg-slate-50/50 p-4 w-full min-w-0 overflow-hidden">
                 <p class="mb-2 text-xs font-semibold text-slate-500 uppercase tracking-wide text-center">Perbandingan Nominal</p>
                 <!-- Pembatas Canvas Ekstrem untuk Mobile -->
                 <div class="relative h-[210px] w-full max-w-full min-w-0 overflow-hidden">
@@ -244,7 +244,7 @@
             </div>
 
             <!-- ITEM 2: DONUT CHART -->
-            <div class="flex flex-col justify-between rounded-2xl border border-slate-100 bg-slate-50/50 p-4 w-full min-w-0 overflow-hidden">
+            <div class="flex flex-col justify-between rounded-2xl bg-slate-50/50 p-4 w-full min-w-0 overflow-hidden">
                 <p class="mb-2 text-xs font-semibold text-slate-500 uppercase tracking-wide text-center">Porsi Distribusi Pengeluaran</p>
                 <!-- Pembatas Canvas Ekstrem untuk Mobile -->
                 <div class="relative h-[210px] w-full max-w-full min-w-0 overflow-hidden">
@@ -253,7 +253,7 @@
             </div>
 
             <!-- ITEM 3: PROGRESS BAR LIST -->
-            <div class="flex flex-col justify-between rounded-2xl border border-slate-100 bg-slate-50/50 p-4 w-full min-w-0 overflow-hidden">
+            <div class="flex flex-col justify-between rounded-2xl bg-slate-50/50 p-4 w-full min-w-0 overflow-hidden">
                 <p class="mb-2 text-xs font-semibold text-slate-500 uppercase tracking-wide text-center">Tingkat Penggunaan (%)</p>
                 <div class="h-[210px] w-full space-y-3.5 overflow-y-auto pr-1">
                     @foreach ($summary['budget_usage'] as $budget)
@@ -316,7 +316,7 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start w-full max-w-full min-w-0 overflow-hidden">
         {{-- KARTU 1: BUDGET MAKAN (LEFT) --}}
-        <section class="rounded-3xl border border-brand-orange/15 bg-white shadow-sm flex flex-col h-full w-full min-w-0 overflow-hidden">
+        <section class="rounded-3xl border border-brand-teal/15 bg-white shadow-sm flex flex-col h-full w-full min-w-0 overflow-hidden">
             <!-- Header -->
             <div class="border-b border-slate-100 px-4 py-4 sm:px-6">
                 <p class="text-xs font-bold uppercase tracking-wider text-brand-orange">Budget Makan</p>

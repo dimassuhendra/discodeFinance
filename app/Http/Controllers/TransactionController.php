@@ -34,21 +34,21 @@ class TransactionController extends Controller
     {
         $this->transactionService->createPemasukkan($request->validated());
 
-        return redirect()->route('transactions.index')->with('success', 'Pemasukkan berhasil disimpan!');
+        return redirect()->back()->with('success', 'Pemasukkan berhasil disimpan!');
     }
 
     public function storePengeluaran(StorePengeluaranRequest $request)
     {
         $this->transactionService->createPengeluaran($request->validated());
 
-        return redirect()->route('transactions.index')->with('success', 'Pengeluaran berhasil disimpan!');
+        return redirect()->back()->with('success', 'Pengeluaran berhasil disimpan!');
     }
 
     public function storeMutasi(StoreMutasiRequest $request)
     {
         $this->transactionService->createMutasi($request->validated());
 
-        return redirect()->route('transactions.index')->with('success', 'Mutasi Saldo berhasil diproses!');
+        return redirect()->back()->with('success', 'Mutasi Saldo berhasil diproses!');
     }
 
     public function destroy(string $type, int $id)
@@ -56,9 +56,9 @@ class TransactionController extends Controller
         $deleted = $this->transactionService->deleteTransaction($type, $id);
 
         if ($deleted) {
-            return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil dihapus.');
+            return redirect()->back()->with('success', 'Transaksi berhasil dihapus.');
         }
 
-        return redirect()->route('transactions.index')->with('error', 'Gagal menghapus transaksi.');
+        return redirect()->back()->with('error', 'Gagal menghapus transaksi.');
     }
 }

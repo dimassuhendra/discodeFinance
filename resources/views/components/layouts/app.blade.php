@@ -167,9 +167,15 @@
 
                 <!-- Quick Action Button / Aksi Cepat di Tengah -->
                 <div class="relative -top-4">
-                    <a href="/transaksi/create" class="w-12 h-12 rounded-full bg-brand-orange text-white flex items-center justify-center shadow-lg hover:brightness-105 transition-transform active:scale-95 border-2 border-white">
-                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
-                    </a>
+                    <button 
+                        type="button" 
+                        x-data 
+                        @click="$dispatch('open-global-transaction-modal')" 
+                        class="w-12 h-12 rounded-full bg-brand-orange text-white flex items-center justify-center shadow-lg hover:brightness-105 transition-transform active:scale-95 border-2 border-white focus:outline-none">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        </svg>
+                    </button>
                 </div>
 
                 <!-- Barang -->
@@ -187,6 +193,214 @@
             </div>
         </nav>
 
+    </div>
+
+    <!-- GLOBAL TRANSACTION MODAL -->
+    <div x-data="{ isOpen: false, tab: 'pengeluaran' }"
+        x-on:open-global-transaction-modal.window="isOpen = true"
+        x-on:keydown.escape.window="isOpen = false"
+        x-show="isOpen"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 font-sans"
+        style="display: none;">
+
+        <!-- Backdrop -->
+        <div x-show="isOpen"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            @click="isOpen = false"
+            class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm">
+        </div>
+
+        <!-- Modal -->
+        <div x-show="isOpen"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 translate-y-4 scale-95"
+            x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+            x-transition:leave-end="opacity-0 translate-y-4 scale-95"
+            class="relative w-full max-w-lg max-h-[85vh] overflow-hidden rounded-2xl bg-brand-teal-light shadow-2xl ring-1 ring-black/5 flex flex-col">
+
+            <!-- Header -->
+            <div class="flex items-center justify-between px-4 py-3.5 sm:px-5 sm:py-4 shrink-0">
+                <div class="min-w-0">
+                    <h3 class="text-base sm:text-lg font-bold font-heading text-brand-dark leading-tight">Catat Transaksi</h3>
+                    <p class="mt-0.5 text-[11px] sm:text-xs text-slate-500">Masukkan detail transaksi Anda</p>
+                </div>
+                <button type="button"
+                        @click="isOpen = false"
+                        class="shrink-0 ml-3 w-8 h-8 flex items-center justify-center rounded-lg bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-700 active:scale-95 transition-all focus:outline-none"
+                        aria-label="Tutup">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Tab -->
+            <div class="px-4 pt-3 pb-2 sm:px-5 shrink-0">
+                <!-- Ubah flex-col sm:flex-row menjadi flex items-center -->
+                <div class="flex items-center gap-1 p-1 bg-slate-100 rounded-xl">
+                    <button type="button"
+                            @click="tab = 'pengeluaran'"
+                            :class="tab === 'pengeluaran' ? 'bg-white text-brand-orange shadow-sm font-bold' : 'text-slate-500 font-medium hover:text-slate-700'"
+                            class="flex-1 min-h-12 rounded-lg px-4 py-2 text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]">
+                        <span>Pengeluaran</span>
+                    </button>
+                    <button type="button"
+                            @click="tab = 'pemasukkan'"
+                            :class="tab === 'pemasukkan' ? 'bg-white text-brand-teal shadow-sm font-bold' : 'text-slate-500 font-medium hover:text-slate-700'"
+                            class="flex-1 min-h-12 rounded-lg px-4 py-2 text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]">
+                        <span>Pemasukkan</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Form Content -->
+            <div class="px-4 pb-4 sm:px-5 sm:pb-5 overflow-y-auto flex-1">
+
+                <!-- PENGELUARAN -->
+                <form x-show="tab === 'pengeluaran'"
+                    action="{{ route('transactions.store.pengeluaran') }}"
+                    method="POST"
+                    class="space-y-3">
+                    @csrf
+
+                    <!-- Nominal -->
+                    <div class="bg-slate-50 rounded-xl px-3.5 py-2.5 focus-within:ring-2 focus-within:ring-brand-orange/30 focus-within:border-brand-orange transition-all">
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Nominal</label>
+                        <div class="flex items-center">
+                            <span class="text-lg font-bold text-slate-400 mr-2">Rp</span>
+                            <input type="number"
+                                inputmode="numeric"
+                                name="jumlah"
+                                required
+                                placeholder="0"
+                                class="w-full bg-transparent border-0 p-0 text-2xl font-bold text-brand-dark focus:ring-0 placeholder:text-slate-300 outline-none">
+                        </div>
+                    </div>
+
+                    <!-- Catatan -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Catatan / Transaksi</label>
+                        <input type="text"
+                            name="nama_pengeluaran"
+                            required
+                            placeholder="Makan, Bensin, dll..."
+                            class="w-full px-3.5 py-2.5 bg-slate-50 rounded-xl text-sm text-brand-dark placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-orange/20 focus:border-brand-orange transition-all">
+                    </div>
+
+                    <!-- Sumber Dana + Tanggal -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Sumber Dana</label>
+                            <select name="sumber_dana_id"
+                                    required
+                                    class="w-full px-3 py-2.5 bg-slate-50 rounded-xl text-sm text-brand-dark focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-orange/20 focus:border-brand-orange transition-all">
+                                <option value="" disabled selected>Pilih Dompet</option>
+                                @foreach ($globalSumberPengeluaran ?? [] as $sumber)
+                                    <option value="{{ $sumber->id }}">{{ $sumber->nama_sumber_dana }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Tanggal</label>
+                            <input type="date"
+                                name="tanggal"
+                                value="{{ date('Y-m-d') }}"
+                                required
+                                class="w-full px-3 py-2.5 bg-slate-50 rounded-xl text-sm text-brand-dark focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-orange/20 focus:border-brand-orange transition-all">
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="pt-1 flex gap-2">
+                        <button type="button"
+                                @click="isOpen = false"
+                                class="w-1/3 py-2.5 px-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-500 bg-slate-100 hover:bg-slate-200 active:scale-95 transition-all">
+                            Batal
+                        </button>
+                        <button type="submit"
+                                class="w-2/3 py-2.5 px-2 bg-brand-orange text-white rounded-xl text-xs sm:text-sm font-bold shadow-md shadow-brand-orange/20 active:scale-95 transition-all flex items-center justify-center">
+                            Simpan Pengeluaran
+                        </button>
+                    </div>
+                </form>
+
+                <!-- PEMASUKKAN -->
+                <form x-show="tab === 'pemasukkan'"
+                    action="{{ route('transactions.store.pemasukkan') }}"
+                    method="POST"
+                    class="space-y-3"
+                    style="display: none;">
+                    @csrf
+
+                    <!-- Nominal -->
+                    <div class="bg-slate-50 rounded-xl px-3.5 py-2.5 focus-within:ring-2 focus-within:ring-brand-teal/30 focus-within:border-brand-teal transition-all">
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Nominal</label>
+                        <div class="flex items-center">
+                            <span class="text-lg font-bold text-slate-400 mr-2">Rp</span>
+                            <input type="number"
+                                inputmode="numeric"
+                                name="jumlah"
+                                required
+                                placeholder="0"
+                                class="w-full bg-transparent border-0 p-0 text-2xl font-bold text-brand-dark focus:ring-0 placeholder:text-slate-300 outline-none">
+                        </div>
+                    </div>
+
+                    <!-- Sumber Pemasukkan -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Sumber Pemasukkan</label>
+                        <input type="text"
+                            name="nama_pemasukkan"
+                            required
+                            placeholder="Gaji, Freelance, dll..."
+                            class="w-full px-3.5 py-2.5 bg-slate-50 rounded-xl text-sm text-brand-dark placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-teal/20 focus:border-brand-teal transition-all">
+                    </div>
+
+                    <!-- Penerima Dana + Tanggal -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Penerima Dana</label>
+                            <select name="sumber_dana_id"
+                                    required
+                                    class="w-full px-3 py-2.5 bg-slate-50 rounded-xl text-sm text-brand-dark focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-teal/20 focus:border-brand-teal transition-all">
+                                <option value="" disabled selected>Pilih Dompet</option>
+                                @foreach ($globalSumberPemasukkan ?? [] as $sumber)
+                                    <option value="{{ $sumber->id }}">{{ $sumber->nama_sumber_dana }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Tanggal</label>
+                            <input type="date"
+                                name="tanggal"
+                                value="{{ date('Y-m-d') }}"
+                                required
+                                class="w-full px-3 py-2.5 bg-slate-50 rounded-xl text-sm text-brand-dark focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-teal/20 focus:border-brand-teal transition-all">
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="pt-1 flex gap-2">
+                        <button type="button"
+                                @click="isOpen = false"
+                                class="w-1/3 py-2.5 px-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-500 bg-slate-100 hover:bg-slate-200 active:scale-95 transition-all">
+                            Batal
+                        </button>
+                        <button type="submit"
+                                class="w-2/3 py-2.5 px-2 bg-brand-teal text-white rounded-xl text-xs sm:text-sm font-bold shadow-md shadow-brand-teal/20 active:scale-95 transition-all flex items-center justify-center">
+                            Simpan Pemasukkan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
     @fluxScripts
