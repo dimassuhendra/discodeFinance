@@ -3,6 +3,7 @@
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\SumberDanaController;
+use App\Http\Controllers\InvestasiController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -22,3 +23,9 @@ Route::prefix('sumber-dana')->name('sumber-dana.')->group(function () {
     Route::put('/{tipe}/{id}', [SumberDanaController::class, 'update'])->name('update');
     Route::delete('/{tipe}/{id}', [SumberDanaController::class, 'destroy'])->name('destroy');
 });
+
+Route::resource('investasi', InvestasiController::class)->except([
+    'create',
+    'show',
+    'edit'
+]);

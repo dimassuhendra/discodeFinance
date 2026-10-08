@@ -28,4 +28,9 @@ class Pengeluaran extends Model
     {
         return $this->hasOne(PencatatanInvestasi::class, 'id_pengeluaran');
     }
+
+    public function riwayatInvestasi()
+    {
+        return $this->hasOne(RiwayatInvestasi::class, 'id_pengeluaran');
+    }
 }
